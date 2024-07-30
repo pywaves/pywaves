@@ -450,7 +450,8 @@ class TxSigner:
                 if param['type'] == 'integer':
                     parameterBytes += b'\0' + struct.pack(">q", param['value'])
                 elif param['type'] == 'binary':
-                    parameterBytes += b'\1' + struct.pack(">L", len(param['value'])) + crypto.str2bytes(param['value'])
+                    value = base64.b64decode(param['value'][7:])
+                    parameterBytes += b'\1' + struct.pack(">I", len(value)) + value
                 elif param['type'] == 'string':
                     parameterBytes += b'\2' + struct.pack(">I", len(crypto.str2bytes(param['value']))) + crypto.str2bytes(
                         param['value'])
@@ -466,7 +467,8 @@ class TxSigner:
                         if nestedParam['type'] == 'integer':
                             parameterBytes += b'\0' + struct.pack(">Q", nestedParam['value'])
                         elif nestedParam['type'] == 'binary':
-                            parameterBytes += b'\1' + struct.pack(">I", len(nestedParam['value'])) + crypto.str2bytes(nestedParam['value'])
+                            value = base64.b64decode(nestedParam['value'][7:])
+                            parameterBytes += b'\1' + struct.pack(">I", len(value)) + value
                         elif nestedParam['type'] == 'string':
                             parameterBytes += b'\2' + struct.pack(">I", len(crypto.str2bytes(
                                 nestedParam['value']))) + crypto.str2bytes(nestedParam['value'])
