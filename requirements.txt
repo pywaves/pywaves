@@ -1,6 +1,5 @@
 requests
 python-axolotl-curve25519
-pyblake2
 base58==0.2.5
 protobuf==3.19.6
 google-api-python-client

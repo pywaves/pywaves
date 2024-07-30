@@ -1,5 +1,4 @@
 import hashlib
-import pyblake2
 import axolotl_curve25519 as curve
 import base58
 import os
@@ -14,8 +13,8 @@ if bytes == str:  # python2
     bytes2str = lambda b: b
     str2list = lambda s: [ord(c) for c in s]
 else:  # python3
-    str2bytes = lambda s: s.encode('latin-1')
-    bytes2str = lambda b: ''.join(map(chr, b))
+    str2bytes = lambda s: s.encode('latin-1') if isinstance(s, str) else s
+    bytes2str = lambda b: ''.join(map(chr, b)) if isinstance(b, bytes) else b
     str2list = lambda s: [c for c in s]
 
 
@@ -249,7 +248,7 @@ class KeccakHash(object):
         finalised = self.sponge.copy()
         finalised.absorb_final()
         digest = finalised.squeeze(self.digest_size)
-        return ''.join(map(chr, digest))
+        return bytes(digest)
 
 
 keccak256 = KeccakHash()
@@ -258,9 +257,9 @@ def sha256(s):
     return hashlib.sha256(str2bytes(s)).digest()
 
 def hashChain(s):
-    a=pyblake2.blake2b(s, digest_size=32).digest()
+    a=hashlib.blake2b(str2bytes(s), digest_size=32).digest()
     b=keccak256.digest(a)
-    return b
+    return bytes2str(b)
 
 def sign(privateKey, message):
     random64 = os.urandom(64)
